@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--Spring配置-->
+    <description>Spring Configuration</description>
+
+    <!-- 启用spring一些annotation,开启注解配置 即Autowried-->
+    <context:annotation-config/>
+
+    <!--加载属性配置文件-->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/wqpav*.properties"/>
+
+    <!--使用Annotation自动注册Bean,自动扫描Service层,base-package如果有多个中间可以使用逗号分隔开-->
+    <context:component-scan base-package="com.wqp.av">
+        <!--不包含@Controller注解的类-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--数据源配置-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!--配置初始化大小，最小，最大-->
+        <property name="initialSize" value="${jdbc.pool.init}"/>
+        <property name="minIdle" value="${jdbc.pool.minIdle}"/>
+        <property name="maxActive" value="${jdbc.pool.maxActive}"/>
+
+        <!--配置获取连接时等待超时时间-->
+        <property name="maxWait" value="6000"/>
+
+        <!--配置连接测试
+        <property name="validationQuery" value="${jdbc.test.sql}"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="testWhileIdle" value="false"/>-->
+    </bean>
+
+
+    <!--配置Mybatis-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--mybatis配置文件路径-->
+        <property name="configLocation" value="classpath:/mybatis-config.xml"/>
+        <!--实体类映射文件路径-->
+        <property name="mapperLocations" value="classpath:/mappings/**/*.xml"/>
+    </bean>
+
+    <!--配置Mybatis动态代理，不用编写dao实现类的操作-->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--如果只有一个数据源的话可以不用指定，但是如果有多个数据源的话必须要指定-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!--这里的basePackage 指定了dao层接口路径，这里的dao接口不用自己实现,value为dao的包路径-->
+        <property name="basePackage" value="com.wqp.grab"/>
+    </bean>
+
+
+
+    <!--配置数据库操作事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置事务开启操作-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--指定在连接方法上应用的事务属性-->
+            <tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置AOP
+    <aop:config>
+        <aop:pointcut id="stockPointcut" expression="execution(* *..service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="stockPointcut"/>
+    </aop:config>-->
+
+
+</beans>
