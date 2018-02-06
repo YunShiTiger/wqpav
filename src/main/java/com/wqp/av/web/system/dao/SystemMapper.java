@@ -1,4 +1,4 @@
-package com.wqp.av.common.system.dao;
+package com.wqp.av.web.system.dao;
 
 public interface SystemMapper {
 

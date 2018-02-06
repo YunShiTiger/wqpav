@@ -2,6 +2,6 @@
 <%@ include file="include/taglib.jsp"%>
 <html>
 <body>
-<h2>Hello World!</h2>
+<h2>首页</h2>
 </body>
 </html>

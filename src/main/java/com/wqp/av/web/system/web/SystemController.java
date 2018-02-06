@@ -1,4 +1,4 @@
-package com.wqp.av.common.system.web;
+package com.wqp.av.web.system.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +18,8 @@ public class SystemController {
             link = "/modules/chat/chat";
         }else if ("2".equals(way)){
             link = "/modules/test/test";
+        }else if ("3".equals(way)){
+            link = "/modules/chat/chat2";
         }
         return link;
     }

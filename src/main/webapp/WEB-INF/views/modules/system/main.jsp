@@ -14,6 +14,7 @@
 <body>
     <button onclick="jump(1);">进入聊天页面</button><br>
     <button onclick="jump(2);">进入测试页面</button><br>
+    <button onclick="jump(3);">进入聊天页面2</button><br>
 
 <script>
     function jump(flag) {
@@ -22,6 +23,9 @@
         }
         if(flag == 2){
             document.location.href = '${ctx}/system/jump?way=2';
+        }
+        if(flag == 3){
+            document.location.href = '${ctx}/system/jump?way=3';
         }
     }
 
